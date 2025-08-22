@@ -4,25 +4,31 @@
 <meta charset="UTF-8">
 <title>Redirecionando...</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body>Autenticando...
 <script>
-(function(){
-  function p(n){return new URLSearchParams(location.search).get(n);}
-  const uri = p('uri');
-  const token = p('token');
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(location.search);
+  const uri = params.get('uri');
+  const token = params.get('token');
   if(!uri || !token){
-    document.body.textContent='Parâmetros inválidos.'; return;
+    document.body.textContent='Parâmetros inválidos.';
+    return;
   }
   const form = document.createElement('form');
   form.method='POST';
   form.action=uri;
   form.style.display='none';
-  const inp=document.createElement('input');
+
+  const inp = document.createElement('input');
+  inp.type='hidden';
   inp.name='token';
   inp.value=token;
   form.appendChild(inp);
+
   document.body.appendChild(form);
-  setTimeout(()=>form.submit(),30);
-})();
+  form.submit();
+});
 </script>
-<body>Autenticando...</body>
+</body>
 </html>
