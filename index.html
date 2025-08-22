@@ -2,15 +2,14 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Autenticando...</title>
+<title>Redirecionando...</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <script>
 (function(){
-  function getToken(){
+    function getToken(){
     const sp = new URLSearchParams(location.search);
     const qTok = sp.get('token');
     if (qTok) return qTok;
-    // Extrai último segmento após /relay/
     const parts = location.pathname.split('/').filter(Boolean);
     const last = parts[parts.length - 1];
     return (last && last.toLowerCase() !== 'relay' && last.toLowerCase() !== 'index.html') ? last : null;
@@ -22,10 +21,23 @@
     });
     return;
   }
-  const destino = 'https://eleicoes.hmg.funpresp.com.br/api/voter-jwt-auth/' + encodeURIComponent(token);
-  location.replace(destino);
+  function p(n){return new URLSearchParams(location.search).get(n);}
+  const uri = 'https://eleicoes.hmg.funpresp.com.br/api/voter-jwt-auth/';
+  //const token = p('token');
+  if(!uri || !token){
+    document.body.textContent='Parâmetros inválidos.'; return;
+  }
+  const form = document.createElement('form');
+  form.method='POST';
+  form.action=uri;
+  form.style.display='none';
+  const inp=document.createElement('input');
+  inp.name='token';
+  inp.value=token;
+  form.appendChild(inp);
+  document.body.appendChild(form);
+  setTimeout(()=>form.submit(),30);
 })();
 </script>
-</head>
 <body>Autenticando...</body>
 </html>
