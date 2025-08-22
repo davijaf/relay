@@ -2,39 +2,46 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Redirecionando...</title>
+<title>Autenticando...</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <script>
-// Mesmo script do index para rotas /relay/<token>
 (function(){
-  function getToken(){
+  function extrairToken(){
     const sp = new URLSearchParams(location.search);
-    const qTok = sp.get('token');
-    if (qTok) return qTok;
-    const parts = location.pathname.split('/').filter(Boolean);
-    const last = parts[parts.length - 1];
-    return (last && last.toLowerCase() !== 'relay' && last.toLowerCase() !== 'index.html') ? last : null;
+    const q = sp.get('token');
+    if (q) return q.trim();
+    // Caminho: .../relay/<token>
+    const path = location.pathname.replace(/\/+$/,'');
+    const parts = path.split('/').filter(Boolean);
+    const iRelay = parts.lastIndexOf('relay');
+    if (iRelay !== -1 && parts.length > iRelay + 1) {
+      return parts[iRelay + 1].trim();
+    }
+    return null;
   }
-  const token = getToken();
+
+  const token = extrairToken();
   if(!token){
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', ()=> {
       document.body.textContent = 'Token não encontrado.';
     });
-  function p(n){return new URLSearchParams(location.search).get(n);}
-  const uri = 'https://eleicoes.hmg.funpresp.com.br/api/voter-jwt-auth/';
-  if(!uri || !token){
-    document.body.textContent='Parâmetros inválidos.'; return;
+    return;
   }
+
+  // POST form-urlencoded: token=...
   const form = document.createElement('form');
-  form.method='POST';
-  form.action=uri;
-  form.style.display='none';
-  const inp=document.createElement('input');
-  inp.name='token';
-  inp.value=token;
+  form.method = 'POST';
+  form.action = 'https://eleicoes.hmg.funpresp.com.br/api/voter-jwt-auth';
+  form.style.display = 'none';
+
+  const inp = document.createElement('input');
+  inp.type = 'hidden';
+  inp.name = 'token';
+  inp.value = token;
   form.appendChild(inp);
+
   document.body.appendChild(form);
-  setTimeout(()=>form.submit(),30);
+  form.submit();
 })();
 </script>
 </head>
