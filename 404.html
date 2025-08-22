@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Redirecionando...</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>
+// Mesmo script do index para rotas /relay/<token>
+(function(){
+  function getToken(){
+    const sp = new URLSearchParams(location.search);
+    const qTok = sp.get('token');
+    if (qTok) return qTok;
+    const parts = location.pathname.split('/').filter(Boolean);
+    const last = parts[parts.length - 1];
+    return (last && last.toLowerCase() !== 'relay' && last.toLowerCase() !== 'index.html') ? last : null;
+  }
+  const token = getToken();
+  if(!token){
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.textContent = 'Token não encontrado.';
+    });
+    return;
+  }
+  const destino = 'https://eleicoes.hmg.funpresp.com.br/api/voter-jwt-auth/' + encodeURIComponent(token);
+  location.replace(destino);
+})();
+</script>
+</head>
+<body>Autenticando...</body>
+</html>
